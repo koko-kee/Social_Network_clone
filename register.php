@@ -98,10 +98,9 @@ if (isset($_POST['register'])) {
 				</div>
 			</form>
 
-
 			<p class="mt-10 text-center text-sm text-gray-500">
 				Not a member?
-				<a href="login.php" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">Login</a>
+				<a href="login.php" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">Vous avez deja un compte</a>
 			</p>
 		</div>
 	</div>
