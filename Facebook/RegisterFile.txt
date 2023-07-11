@@ -1,4 +1,0 @@
-Mohamed,Mohamed,Mohamed@gmail.com,$2y$10$Z2kI4Acc8mCvzuOGUKJuK.zPcB7RJJ7BTI6J1PSL011hEqrTVUOw2,2023-07-01 12:00:14
-Haker,Haker,haker@gmail.com,$2y$10$NNeX8kGF/mrkqSFKIKTqVeUMPELM71sRPZwFfojC70/JY7iFvhW5m,2023-07-01 12:00:39
-Grafikart,Grafikart,grafikat@gmail.com,$2y$10$y89gLL5rzrnqcV3q6M8.X.QUVN32xrBOXQ2Ny66M.jNXNh1mhv0JS,2023-07-05 00:03:33
-Mohamed kone,Mohamed kone,kone35811@gmail.com,$2y$10$V2ZkzOCAayLhUrFbcHjSMOGl5l3tUSju/5xiQUsJ/dPL9Ibef9TjS,2023-07-10 18:31:40
