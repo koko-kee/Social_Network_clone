@@ -1,5 +1,5 @@
 <?php
-require "../Facebook/layouts/header.php";
+require "../Social_network_clone/layouts/header.php";
 define("ITEM_PER_PAGE", 1);
 $count = countTable($pdo, 'posts');
 $page = ceil($count /  ITEM_PER_PAGE);
@@ -20,7 +20,7 @@ if (isset($_POST['post'])) {
     if (isset($_FILES['picture']) && !empty($_FILES['picture'])) {
         $file_tmp = $_FILES['picture']['tmp_name'];
         $file_name = $_FILES['picture']['name'];
-        $Path = "../Facebook/images/" . $file_name;
+        $Path = "../Social_network_clone/images/" . $file_name;
         if (move_uploaded_file($file_tmp, $Path)) {
             $data = [
                 "user_id" => $_SESSION['users']->id,
@@ -38,7 +38,7 @@ if (isset($_POST['edit'])) {
 
         $file_tmp = $_FILES['picture']['tmp_name'];
         $file_name = $_FILES['picture']['name'];
-        $destination_folder = "../Facebook/images/";
+        $destination_folder = "../Social_network_clone/images/";
         $destination_path = $destination_folder . $file_name;
         if (move_uploaded_file($file_tmp, $destination_path)) {
 
@@ -586,4 +586,4 @@ if (isset($_GET['edit_id'])) {
         </div>
         <!-- Row -->
     </div>
-    <?php require "../Facebook/layouts/footer.php"; ?>
+    <?php require "../Social_network_clone/layouts/footer.php"; ?>

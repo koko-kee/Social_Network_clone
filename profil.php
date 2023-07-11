@@ -1,5 +1,5 @@
 <?php
-require "../Facebook/layouts/header.php";
+require "../Social_network_clone/layouts/header.php";
 
 if (!isset($_SESSION['users'])) {
     header("Location: login.php");
@@ -121,7 +121,7 @@ if (isset($_POST['edit'])) {
 
         $file_tmp = $_FILES['picture']['tmp_name'];
         $file_name = $_FILES['picture']['name'];
-        $destination_folder = "../Facebook/images/";
+        $destination_folder = "../Social_network_clone/images/";
         $destination_path = $destination_folder . $file_name;
         if (move_uploaded_file($file_tmp, $destination_path)) {
 
@@ -667,4 +667,4 @@ if (isset($_POST['edit'])) {
 
             </div>
         </div>
-        <?php require "../Facebook/layouts/footer.php"; ?>
+        <?php require "../Social_network_clone/layouts/footer.php"; ?>

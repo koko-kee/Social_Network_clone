@@ -1,7 +1,7 @@
 <?php
 session_start();
-require "../Facebook/function/function.php";
-require "../Facebook/database/database.php";
+require "../Social_network_clone/function/function.php";
+require "../Social_network_clone/database/database.php";
 if (isset($_SESSION['users'])) {
   $users = getById($_SESSION['users']->id, $pdo, "users");
 }
