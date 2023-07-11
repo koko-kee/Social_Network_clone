@@ -1,6 +1,6 @@
 <?php
-require "../Facebook/function/function.php";
-require "../Facebook/database/database.php";
+require "../Social_network_clone/function/function.php";
+require "../Social_network_clone/database/database.php";
 
 if (isset($_POST['register'])) {
 
@@ -9,7 +9,7 @@ if (isset($_POST['register'])) {
 	{
 		$file_tmp = $_FILES['profil']['tmp_name'];
 		$file_name =  $_FILES['profil']['name'];
-		$Path = "../Facebook/images/" . $file_name;
+		$Path = "../Social_network_clone/images/" . $file_name;
 		if (move_uploaded_file($file_tmp, $Path)) {
 			$data = [
 				"username" => $_POST['username'],

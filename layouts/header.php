@@ -5,6 +5,11 @@ require "../Social_network_clone/database/database.php";
 if (isset($_SESSION['users'])) {
   $users = getById($_SESSION['users']->id, $pdo, "users");
 }
+
+if (!isset($_SESSION['users'])) {
+  header("location: login.php");
+  exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">

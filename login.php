@@ -1,7 +1,7 @@
 <?php
 session_start();
-require "../Facebook/function/function.php";
-require "../Facebook/database/database.php";
+require "../Social_network_clone/function/function.php";
+require "../Social_network_clone/database/database.php";
 if (isset($_POST['login'])) {
 
 	if (required($_POST) == null) {
@@ -78,7 +78,7 @@ if (isset($_POST['login'])) {
 
 
 
-	<?php require "../Facebook/layouts/footer.php";
+	<?php require "../Social_network_clone/layouts/footer.php";
 	unset($_SESSION['erreur']);
 	?>
 </body>

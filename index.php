@@ -1,13 +1,5 @@
 <?php
 require "../Social_network_clone/layouts/header.php";
-define("ITEM_PER_PAGE", 1);
-$count = countTable($pdo, 'posts');
-$page = ceil($count /  ITEM_PER_PAGE);
-
-if (!isset($_SESSION['users'])) {
-    header("location: login.php");
-    exit;
-}
 
 if (isset($_GET['post_id'])) {
     $id_post = $_GET['post_id'];
