@@ -69,6 +69,10 @@ if (isset($_POST['comments'])) {
     }
 }
 
+if (isset($_POST['share'])) {
+    var_dump(['kssssss']);
+}
+
 
 
 
@@ -121,6 +125,16 @@ $picture = getById($_SESSION['users']->id, $pdo)->profil;
 if (isset($_GET['edit_id'])) {
     $edit_post = getById($_GET['edit_id'], $pdo, "posts");
 }
+
+if (isset($_GET['post_id_share'])) {
+    $post_id_share = $_GET['post_id_share'];
+    $post_share = getById($post_id_share, $pdo, "posts");
+    $users_share = getById($post_share->user_id, $pdo);
+}
+
+
+
+
 ?>
 
 <style>
@@ -128,7 +142,61 @@ if (isset($_GET['edit_id'])) {
         background: linear-gradient(transparent, rgba(0, 0, 0, 0.5)), url(images/<?php echo $picture; ?>) no-repeat center center /cover;
     }
 </style>
+
+<?php if (isset($_GET['post_id_share'])) : ?>
+    <div class="modal fade" id="exampleModal-share" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title font-weight-bold" id="exampleModalLabel">Écrire une publication</h5>
+                    <a class="display:block;" style="cursor: pointer;" data-bs-dismiss="modal" aria-label="Close"><i style="font-size: 35px;color:crimson" class="fa-solid fa-circle-xmark"></i></a>
+                </div>
+                <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                    <form action="index.php" method="POST">
+                        <div class="comment-box2">
+                            <div class="comment-input2">
+                                <textarea name="comments" class="form-control comment-textarea" placeholder="Quoi de neuf <?= $_SESSION['users']->username ?>" style="height: 100px;" onclick="heightTextarea(this)" oninput="autoResize(this)"></textarea>
+                            </div>
+                        </div>
+                        <button style="width: 100%;" name="share" type="submit" class="btn btn-warning">Partager</button>
+                    </form>
+                    <br>
+                    <div class="profile-timeline">
+                        <ul class="list-unstyled">
+                            <li class="timeline-item">
+                                <div style="border-radius:10px" class="card  grid-margin">
+                                    <div class="card-body">
+                                        <div class="timeline-item-post">
+                                            <div style="margin-bottom: 10px;" class="card">
+                                                <img src="/images/<?= $post_share->picture ?>" alt="">
+                                            </div>
+                                        </div>
+                                        <div class="content d-flex">
+                                            <div class="timeline-item-header">
+                                                <a href="#"><img src="/images/<?= $users_share->profil ?>" alt="" /></a>
+                                                <p style="font-size: 20px;font-weight:600"><?= $users_share->username ?></p>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-item-post">
+                                            <p class="text-dark"><?= $post_share->content ?></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+<?php endif ?>
+
+
 <div class="page-inner no-page-title mt-5">
+
     <!-- Lorem ipsum, dolor sit amet consectetur adipisicing elit. Exercitationem pariatur nostrum suscipit tempore aspernatur atque. Ex fugit ab placeat officiis harum, dolore reiciendis assumenda enim facilis ipsam voluptatem soluta a! -->
     <!-- start page main wrapper -->
     <?php if (isset($_GET['edit_id'])) : ?>
@@ -143,7 +211,7 @@ if (isset($_GET['edit_id'])) {
                     <div class="modal-body">
                         <div class="card">
                             <div class="card-body">
-                                <form action="index.php?modif=<?= $_GET['edit_id'] ?>" method="POST" enctype="multipart/form-data">
+                                <!-- <form action="index.php?modif=<?= $_GET['edit_id'] ?>" method="POST" enctype="multipart/form-data">
                                     <div class="form-group">
                                         <div class="mb-3">
                                             <div class="col-span-full">
@@ -168,7 +236,7 @@ if (isset($_GET['edit_id'])) {
                                         <textarea class="form-control" name="content" id="textInput" rows="3"><?= $edit_post->content ?></textarea>
                                     </div>
                                     <button style="width: 100%;" name="edit" type="submit" class="btn btn-warning">Modifier le post</button>
-                                </form>
+                                </form> -->
                             </div>
                         </div>
                     </div>
@@ -270,7 +338,7 @@ if (isset($_GET['edit_id'])) {
                                                     <div class="modal-body">
                                                         <div class="card">
                                                             <div class="card-body">
-                                                                <form action="index.php" method="POST" enctype="multipart/form-data">
+                                                                <!-- <form action="index.php" method="POST" enctype="multipart/form-data">
                                                                     <div class="form-group">
                                                                         <div class="mb-3">
                                                                             <div class="col-span-full">
@@ -295,7 +363,7 @@ if (isset($_GET['edit_id'])) {
                                                                         <textarea class="form-control" placeholder="contenu du post" name="content" id="textInput" rows="3"></textarea>
                                                                     </div>
                                                                     <button style="width: 100%;" name="post" type="submit" class="btn btn-primary">Poster</button>
-                                                                </form>
+                                                                </form> -->
                                                             </div>
                                                         </div>
                                                     </div>
@@ -312,6 +380,58 @@ if (isset($_GET['edit_id'])) {
                         </div>
                     </div>
                 </div>
+                <!-- Share party -->
+                <div class="profile-timeline">
+                    <ul class="list-unstyled">
+                        <li class="timeline-item">
+                            <div style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);border-radius:10px" class="card  grid-margin">
+                                <div class="card-body">
+                                    <div class="content d-flex">
+                                        <div class="timeline-item-header">
+                                            <a href="#"><img src="/images/albert-einstein-with-blue-hair-midjourney-4-1.jpg" alt="" /></a>
+                                            <p style="font-size: 20px;font-weight:600">Momo</p>
+                                        </div>
+                                        <a href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <small><i style="color: black; font-size: 15px;" class="fa-solid fa-ellipsis"></i></small>
+                                        </a>
+                                    </div>
+                                    <div class="timeline-item-post">
+                                        <div class="profile-timeline">
+                                            <ul class="list-unstyled">
+                                                <li class="timeline-item">
+                                                    <div style="border-radius:10px" class="card  grid-margin">
+                                                        <div class="card-body">
+                                                            <div class="timeline-item-post">
+                                                                <div style="margin-bottom: 10px;" class="card">
+                                                                    <img src="/images/albert-einstein-with-blue-hair-midjourney-4-1.jpg" alt="">
+                                                                </div>
+                                                            </div>
+                                                            <div class="content d-flex">
+                                                                <div class="timeline-item-header">
+                                                                    <a href="#"><img src="/images/albert-einstein-with-blue-hair-midjourney-4-1.jpg" alt="" /></a>
+                                                                    <p style="font-size: 20px;font-weight:600">Momo</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="timeline-item-post">
+                                                                <p class="text-dark">Lorem ipsum dolor sit amet consectetur adipisi</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="timeline-options d-flex justify-content-around">
+                                            <a href="#"><i class="fa fa-thumbs-up"></i> Like (10)</a>
+                                            <a class="editLink" href="#" style="z-index: 1050;"><i class="fa fa-comment"></i>Commenter</a>
+                                            <a id="share" href="#"><i class="fa fa-share"></i>Partager</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <!-- End share -->
                 <?php foreach (JointurePost($pdo) as $post) : ?>
                     <div class="profile-timeline">
                         <ul class="list-unstyled">
@@ -456,7 +576,29 @@ if (isset($_GET['edit_id'])) {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <a href="#"><i class="fa fa-share"></i>Partager</a>
+                                                <a id="share" class="dropdown-toggle" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" href="#"><i class="fa fa-share"></i>Partager</a>
+                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                                    <li><a href="index.php?post_id_share=<?= $post->id ?>" class="dropdown-item">Partager sur le Fil</a></li>
+                                                    <span class="d-none" data-bs-toggle="modal" data-bs-target="#exampleModal-share"></span>
+                                                    <div class="modal fade" id="exampleModal-share" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    ...
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                    <button type="button" class="btn btn-primary">Save changes</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </ul>
                                             </div>
                                         </div>
                                     </div>
