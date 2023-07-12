@@ -70,6 +70,15 @@ function JointurePost($conn)
 } 
 
 
+function JointureShare($conn)
+{
+    $stmt = $conn->prepare("SELECT p.id , p.picture, p.content , u.profil , u.username ,p.user_id FROM posts p INNER JOIN share u ON p.user_id = u.id ORDER BY p.id DESC");
+    $stmt->execute();
+    return $stmt->fetchAll();
+} 
+
+
+
 
 function JointurePostTableByUserId($conn, $id)
 {

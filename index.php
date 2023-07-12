@@ -69,12 +69,6 @@ if (isset($_POST['comments'])) {
     }
 }
 
-if (isset($_POST['share'])) {
-    var_dump(['kssssss']);
-}
-
-
-
 
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
@@ -133,6 +127,44 @@ if (isset($_GET['post_id_share'])) {
 }
 
 
+if (isset($_POST['share'])) {
+    
+    $post_share_id = $_GET['post_share'];
+    $content = $_POST['content'];
+    insert("partager",[
+        "post_id" => $post_share_id,
+        "user_id" => $_SESSION['users']->id,
+        "content" => $content
+    ],$pdo);
+    header("location:index.php");
+}
+
+
+// $post_partage = [];
+
+// foreach(JointurePost($pdo) as $post)
+// {
+//   $post_partage[]= $post;
+// }
+
+// foreach(get("partager",$pdo) as $share )
+// {
+//   $post_partage[]= $share;
+// }
+
+// function comparer_dates($a, $b) {
+//     if (isset($a->date) && isset($b->date)) {
+//         return strtotime($b->date) - strtotime($a->date);
+//     } else {
+//         // Gérer le cas où la propriété "date" n'est pas définie dans l'un des objets
+//         return 0;
+//     }
+// }
+
+// usort($post_partage, 'comparer_dates');
+
+// var_dump($post_partage);
+
 
 
 ?>
@@ -142,58 +174,6 @@ if (isset($_GET['post_id_share'])) {
         background: linear-gradient(transparent, rgba(0, 0, 0, 0.5)), url(images/<?php echo $picture; ?>) no-repeat center center /cover;
     }
 </style>
-
-<?php if (isset($_GET['post_id_share'])) : ?>
-    <div class="modal fade" id="exampleModal-share" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title font-weight-bold" id="exampleModalLabel">Écrire une publication</h5>
-                    <a class="display:block;" style="cursor: pointer;" data-bs-dismiss="modal" aria-label="Close"><i style="font-size: 35px;color:crimson" class="fa-solid fa-circle-xmark"></i></a>
-                </div>
-                <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
-                    <form action="index.php" method="POST">
-                        <div class="comment-box2">
-                            <div class="comment-input2">
-                                <textarea name="comments" class="form-control comment-textarea" placeholder="Quoi de neuf <?= $_SESSION['users']->username ?>" style="height: 100px;" onclick="heightTextarea(this)" oninput="autoResize(this)"></textarea>
-                            </div>
-                        </div>
-                        <button style="width: 100%;" name="share" type="submit" class="btn btn-warning">Partager</button>
-                    </form>
-                    <br>
-                    <div class="profile-timeline">
-                        <ul class="list-unstyled">
-                            <li class="timeline-item">
-                                <div style="border-radius:10px" class="card  grid-margin">
-                                    <div class="card-body">
-                                        <div class="timeline-item-post">
-                                            <div style="margin-bottom: 10px;" class="card">
-                                                <img src="/images/<?= $post_share->picture ?>" alt="">
-                                            </div>
-                                        </div>
-                                        <div class="content d-flex">
-                                            <div class="timeline-item-header">
-                                                <a href="#"><img src="/images/<?= $users_share->profil ?>" alt="" /></a>
-                                                <p style="font-size: 20px;font-weight:600"><?= $users_share->username ?></p>
-                                            </div>
-                                        </div>
-                                        <div class="timeline-item-post">
-                                            <p class="text-dark"><?= $post_share->content ?></p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                </div>
-            </div>
-        </div>
-    </div>
-
-<?php endif ?>
-
 
 <div class="page-inner no-page-title mt-5">
 
@@ -211,7 +191,7 @@ if (isset($_GET['post_id_share'])) {
                     <div class="modal-body">
                         <div class="card">
                             <div class="card-body">
-                                <!-- <form action="index.php?modif=<?= $_GET['edit_id'] ?>" method="POST" enctype="multipart/form-data">
+                                <form action="index.php?modif=<?= $_GET['edit_id'] ?>" method="POST" enctype="multipart/form-data">
                                     <div class="form-group">
                                         <div class="mb-3">
                                             <div class="col-span-full">
@@ -236,7 +216,7 @@ if (isset($_GET['post_id_share'])) {
                                         <textarea class="form-control" name="content" id="textInput" rows="3"><?= $edit_post->content ?></textarea>
                                     </div>
                                     <button style="width: 100%;" name="edit" type="submit" class="btn btn-warning">Modifier le post</button>
-                                </form> -->
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -245,6 +225,7 @@ if (isset($_GET['post_id_share'])) {
         </div>
     <?php endif ?>
     <div id="main-wrapper">
+
         <div class="row">
             <div style="position: fixed; left: 0;" class="col-lg-6 col-xl-4">
                 <div class="grid-margin" style="border-radius: 10px; border:none; background-color: #f2f0f5;">
@@ -306,6 +287,54 @@ if (isset($_GET['post_id_share'])) {
                         </div>
                     </div>
                 </div>
+                <span class="d-none" data-bs-toggle="modal" data-bs-target="#photoModal-share"></span>
+                <div class="modal fade " id="photoModal-share" tabindex="-1" role="dialog" aria-labelledby="photoModalLabel" aria-hidden="true">
+                    <div class="modal-dialog " role="document">
+                        <div class="modal-content">
+                            <form action="index.php?post_share=<?=$post_share->id?>" method="post">
+                                <div class="modal-header">
+                                    <h5 class="modal-title font-weight-bold" id="photoModalLabel">Creer un nouveau post</h5>
+                                    <a href="index.php"><i style="font-size: 35px;color:crimson" class="fa-solid fa-circle-xmark"></i></a>
+                                </div>
+                                <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                                    <div class="comment-box2">
+                                        <div class="comment-input2">
+                                            <textarea name="content" class="form-control comment-textarea" placeholder="Écrivez un commentaire"  onclick="heightTextarea(this)" oninput="autoResize(this)" style="height: 100px;" ></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="profile-timeline">
+                                        <ul class="list-unstyled">
+                                            <li class="timeline-item">
+                                                <div style="border-radius:10px" class="card  grid-margin">
+                                                    <div class="card-body">
+                                                        <div class="timeline-item-post">
+                                                            <div style="margin-bottom: 10px;" class="card">
+                                                                <img src="/images/<?= $post_share->picture ?>" alt="">
+                                                            </div>
+                                                        </div>
+                                                        <div class="content d-flex">
+                                                            <div class="timeline-item-header">
+                                                                <a href="#"><img src="/images/<?= $users_share->profil ?>" alt="" /></a>
+                                                                <p style="font-size: 20px;font-weight:600"><?= $users_share->username ?></p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="timeline-item-post">
+                                                            <p class="text-dark"><?= $post_share->content ?></p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button style="width: 100%;" name="share" type="submit" class="btn btn-primary">Poster</button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
                 <div style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius:10px" class="card mb-4">
                     <div class="card-body">
                         <div class="media">
@@ -338,7 +367,7 @@ if (isset($_GET['post_id_share'])) {
                                                     <div class="modal-body">
                                                         <div class="card">
                                                             <div class="card-body">
-                                                                <!-- <form action="index.php" method="POST" enctype="multipart/form-data">
+                                                                <form action="index.php" method="POST" enctype="multipart/form-data">
                                                                     <div class="form-group">
                                                                         <div class="mb-3">
                                                                             <div class="col-span-full">
@@ -363,7 +392,7 @@ if (isset($_GET['post_id_share'])) {
                                                                         <textarea class="form-control" placeholder="contenu du post" name="content" id="textInput" rows="3"></textarea>
                                                                     </div>
                                                                     <button style="width: 100%;" name="post" type="submit" class="btn btn-primary">Poster</button>
-                                                                </form> -->
+                                                                </form>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -381,6 +410,12 @@ if (isset($_GET['post_id_share'])) {
                     </div>
                 </div>
                 <!-- Share party -->
+                <?php foreach(get("partager",$pdo) as $share):?>
+                <?php 
+                 $share_post = getById($share->post_id,$pdo,"posts");
+                 $users_share = getById($share->user_id,$pdo,"users");
+                 $users_post = getById( $share_post->user_id,$pdo,"users");
+                ?>
                 <div class="profile-timeline">
                     <ul class="list-unstyled">
                         <li class="timeline-item">
@@ -388,8 +423,8 @@ if (isset($_GET['post_id_share'])) {
                                 <div class="card-body">
                                     <div class="content d-flex">
                                         <div class="timeline-item-header">
-                                            <a href="#"><img src="/images/albert-einstein-with-blue-hair-midjourney-4-1.jpg" alt="" /></a>
-                                            <p style="font-size: 20px;font-weight:600">Momo</p>
+                                            <a href="#"><img src="/images/<?=$users_share->profil?>" alt="" /></a>
+                                            <p style="font-size: 20px;font-weight:600"><?=$users_share->username?></p>
                                         </div>
                                         <a href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                                             <small><i style="color: black; font-size: 15px;" class="fa-solid fa-ellipsis"></i></small>
@@ -403,17 +438,17 @@ if (isset($_GET['post_id_share'])) {
                                                         <div class="card-body">
                                                             <div class="timeline-item-post">
                                                                 <div style="margin-bottom: 10px;" class="card">
-                                                                    <img src="/images/albert-einstein-with-blue-hair-midjourney-4-1.jpg" alt="">
+                                                                    <img src="/images/<?=$share_post->picture?>" alt="">
                                                                 </div>
                                                             </div>
                                                             <div class="content d-flex">
                                                                 <div class="timeline-item-header">
-                                                                    <a href="#"><img src="/images/albert-einstein-with-blue-hair-midjourney-4-1.jpg" alt="" /></a>
-                                                                    <p style="font-size: 20px;font-weight:600">Momo</p>
+                                                                    <a href="#"><img src="/images/<?=$users_post->profil?>" alt="" /></a>
+                                                                    <p style="font-size: 20px;font-weight:600"><?=$users_post->username?></p>
                                                                 </div>
                                                             </div>
                                                             <div class="timeline-item-post">
-                                                                <p class="text-dark">Lorem ipsum dolor sit amet consectetur adipisi</p>
+                                                                <p class="text-dark"><?=$share_post->content?></p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -431,6 +466,7 @@ if (isset($_GET['post_id_share'])) {
                         </li>
                     </ul>
                 </div>
+                <?php endforeach ?>
                 <!-- End share -->
                 <?php foreach (JointurePost($pdo) as $post) : ?>
                     <div class="profile-timeline">
@@ -579,7 +615,6 @@ if (isset($_GET['post_id_share'])) {
                                                 <a id="share" class="dropdown-toggle" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" href="#"><i class="fa fa-share"></i>Partager</a>
                                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
                                                     <li><a href="index.php?post_id_share=<?= $post->id ?>" class="dropdown-item">Partager sur le Fil</a></li>
-                                                    <span class="d-none" data-bs-toggle="modal" data-bs-target="#exampleModal-share"></span>
                                                     <div class="modal fade" id="exampleModal-share" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                                         <div class="modal-dialog">
                                                             <div class="modal-content">
