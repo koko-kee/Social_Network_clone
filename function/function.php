@@ -64,7 +64,7 @@ function required($data): ?int
 
 function JointurePost($conn)
 {
-    $stmt = $conn->prepare("SELECT p.id , p.picture, p.content , u.profil , u.username ,p.user_id FROM posts p INNER JOIN users u ON p.user_id = u.id ORDER BY p.id DESC");
+    $stmt = $conn->prepare("SELECT p.id , p.picture, p.content , p.date ,p.statut , u.profil , u.username ,p.user_id FROM posts p INNER JOIN users u ON p.user_id = u.id ORDER BY p.id DESC");
     $stmt->execute();
     return $stmt->fetchAll();
 } 

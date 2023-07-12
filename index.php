@@ -128,42 +128,38 @@ if (isset($_GET['post_id_share'])) {
 
 
 if (isset($_POST['share'])) {
-    
+
     $post_share_id = $_GET['post_share'];
     $content = $_POST['content'];
-    insert("partager",[
+    insert("partager", [
         "post_id" => $post_share_id,
         "user_id" => $_SESSION['users']->id,
         "content" => $content
-    ],$pdo);
+    ], $pdo);
     header("location:index.php");
 }
 
 
-// $post_partage = [];
+$post_partage = [];
 
-// foreach(JointurePost($pdo) as $post)
-// {
-//   $post_partage[]= $post;
-// }
+foreach (JointurePost($pdo) as $post) {
+    $post_partage[] = $post;
+}
 
-// foreach(get("partager",$pdo) as $share )
-// {
-//   $post_partage[]= $share;
-// }
+foreach (get("partager", $pdo) as $share) {
+    $post_partage[] = $share;
+}
 
-// function comparer_dates($a, $b) {
-//     if (isset($a->date) && isset($b->date)) {
-//         return strtotime($b->date) - strtotime($a->date);
-//     } else {
-//         // Gérer le cas où la propriété "date" n'est pas définie dans l'un des objets
-//         return 0;
-//     }
-// }
+function comparer_dates($a, $b)
+{
+    if (isset($a->date) && isset($b->date)) {
+        return strtotime($b->date) - strtotime($a->date);
+    } else {
+        return 0;
+    }
+}
+usort($post_partage, 'comparer_dates');
 
-// usort($post_partage, 'comparer_dates');
-
-// var_dump($post_partage);
 
 
 
@@ -291,7 +287,7 @@ if (isset($_POST['share'])) {
                 <div class="modal fade " id="photoModal-share" tabindex="-1" role="dialog" aria-labelledby="photoModalLabel" aria-hidden="true">
                     <div class="modal-dialog " role="document">
                         <div class="modal-content">
-                            <form action="index.php?post_share=<?=$post_share->id?>" method="post">
+                            <form action="index.php?post_share=<?= $post_share->id ?>" method="post">
                                 <div class="modal-header">
                                     <h5 class="modal-title font-weight-bold" id="photoModalLabel">Creer un nouveau post</h5>
                                     <a href="index.php"><i style="font-size: 35px;color:crimson" class="fa-solid fa-circle-xmark"></i></a>
@@ -299,7 +295,7 @@ if (isset($_POST['share'])) {
                                 <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
                                     <div class="comment-box2">
                                         <div class="comment-input2">
-                                            <textarea name="content" class="form-control comment-textarea" placeholder="Écrivez un commentaire"  onclick="heightTextarea(this)" oninput="autoResize(this)" style="height: 100px;" ></textarea>
+                                            <textarea name="content" class="form-control comment-textarea" placeholder="Écrivez un commentaire" onclick="heightTextarea(this)" oninput="autoResize(this)" style="height: 100px;"></textarea>
                                         </div>
                                     </div>
                                     <div class="profile-timeline">
@@ -409,238 +405,241 @@ if (isset($_POST['share'])) {
                         </div>
                     </div>
                 </div>
-                <!-- Share party -->
-                <?php foreach(get("partager",$pdo) as $share):?>
-                <?php 
-                 $share_post = getById($share->post_id,$pdo,"posts");
-                 $users_share = getById($share->user_id,$pdo,"users");
-                 $users_post = getById( $share_post->user_id,$pdo,"users");
-                ?>
-                <div class="profile-timeline">
-                    <ul class="list-unstyled">
-                        <li class="timeline-item">
-                            <div style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);border-radius:10px" class="card  grid-margin">
-                                <div class="card-body">
-                                    <div class="content d-flex">
-                                        <div class="timeline-item-header">
-                                            <a href="#"><img src="/images/<?=$users_share->profil?>" alt="" /></a>
-                                            <p style="font-size: 20px;font-weight:600"><?=$users_share->username?></p>
-                                        </div>
-                                        <a href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <small><i style="color: black; font-size: 15px;" class="fa-solid fa-ellipsis"></i></small>
-                                        </a>
-                                    </div>
-                                    <div class="timeline-item-post">
-                                        <div class="profile-timeline">
-                                            <ul class="list-unstyled">
-                                                <li class="timeline-item">
-                                                    <div style="border-radius:10px" class="card  grid-margin">
-                                                        <div class="card-body">
-                                                            <div class="timeline-item-post">
-                                                                <div style="margin-bottom: 10px;" class="card">
-                                                                    <img src="/images/<?=$share_post->picture?>" alt="">
+
+                <?php foreach ($post_partage as $all) : ?>
+                    <?php if ($all->statut == "post") : ?>
+                        <div class="profile-timeline">
+                            <ul class="list-unstyled">
+                                <li class="timeline-item">
+                                    <div style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);border-radius:10px" class="card  grid-margin">
+                                        <div class="card-body">
+                                            <div class="content d-flex">
+                                                <div class="timeline-item-header">
+                                                    <a href="profil.php?user_id=<?= $all->user_id ?>"><img src="/images/<?= $all->profil ?>" alt="" /></a>
+                                                    <p style="font-size: 20px;font-weight:600"><?= $all->username ?></p>
+                                                </div>
+                                                <?php if ($_SESSION['users']->id == $all->user_id) : ?>
+                                                    <a href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <small><i style="color: black; font-size: 15px;" class="fa-solid fa-ellipsis"></i></small>
+                                                    </a>
+                                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                        <li>
+                                                            <a class="dropdown-item" href="index.php?edit_id=<?= $all->id ?>">
+                                                                <i class="fas fa-edit"></i> Modifier la publiaction
+                                                            </a>
+                                                            <span data-toggle="modal" data-target="#photoModal-1" style="display:none;"></span>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item" href="index.php?delpost=<?= $all->id ?>">
+                                                                <i class="fas fa-trash-alt"></i> Supprimer la publication
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                <?php endif ?>
+                                            </div>
+                                            <div class="timeline-item-post">
+                                                <p class="text-dark"><?= $all->content ?></p>
+                                                <div style="margin-bottom: 10px;" class="card">
+                                                    <img src="/images/<?= $all->picture ?>" alt="">
+                                                </div>
+                                                <div class="bbbb d-flex justify-content-end">
+                                                    <a href=""><?= CountCommentByPostId($pdo, $all->id) ?> <i class="fa-solid fa-comment"></i></a>
+                                                    <a style="margin-left: 20px;" href="#"><i class="fa fa-share"></i> 20</a>
+                                                </div>
+                                                <hr>
+                                                <div class="timeline-options d-flex justify-content-around">
+                                                    <?php if (!checkLikeForUser($pdo, $all->id, $_SESSION['users']->id)) : ?>
+                                                        <a href="index.php?post_id=<?= $all->id ?>"><i class="fa fa-thumbs-up"></i> Like (<?= countTableById($all->id, $pdo) ?>)</a>
+                                                    <?php else : ?>
+                                                        <a href="index.php?post_id=<?= $all->id ?>"><i style="color: red;" class="fa fa-thumbs-up"></i> Like (<?= countTableById($all->id, $pdo) ?>)</a>
+                                                    <?php endif ?>
+                                                    <a class="editLink" href="#" data-taskid="<?= $all->id ?>" data-bs-toggle="modal" data-bs-target="#staticBackdrop<?= $all->id ?>" style="z-index: 1050;"><i class="fa fa-comment"></i>Commenter</a>
+                                                    <div class="modal fade" id="staticBackdrop<?= $all->id ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                        <div class="modal-dialog modal-lg" role="document">
+                                                            <div style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius:10px" class="modal-content">
+                                                                <div style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius:10px" class="modal-header">
+                                                                    <h5 style="font-weight: b;" class="modal-title" id="photoModalLabel">Publication de <?= $posts->username ?></h5>
+                                                                    <a href="index.php">
+                                                                        <i style="font-size: 35px;" class="fa-solid fa-circle-xmark"></i>
+                                                                    </a>
                                                                 </div>
-                                                            </div>
-                                                            <div class="content d-flex">
-                                                                <div class="timeline-item-header">
-                                                                    <a href="#"><img src="/images/<?=$users_post->profil?>" alt="" /></a>
-                                                                    <p style="font-size: 20px;font-weight:600"><?=$users_post->username?></p>
+                                                                <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                                                                    <div class="profile-timeline">
+                                                                        <ul class="list-unstyled">
+                                                                            <li class="timeline-item">
+                                                                                <div class="card card-white grid-margin">
+                                                                                    <div class="card-body">
+                                                                                        <div class="timeline-item-header">
+                                                                                            <a href="profil.php?user_id=<?= $posts->user_id ?>"><img src="/images/<?= $posts->profil ?>" alt="" /></a>
+                                                                                            <p><?= $post->username ?></p>
+                                                                                            <small>3 hours ago</small>
+                                                                                        </div>
+                                                                                        <div class="timeline-item-post">
+                                                                                            <p><?= $post->content ?></p>
+                                                                                            <div class="card">
+                                                                                                <img src="/images/<?= $posts->picture ?>" alt="">
+                                                                                            </div>
+                                                                                            <div class="timeline-options d-flex justify-content-around">
+                                                                                                <?php if (!checkLikeForUser($pdo, $all->id, $_SESSION['users']->id)) : ?>
+                                                                                                    <a href="index.php?id=<?= $all->id ?>"><i class="fa fa-thumbs-up"></i> Like (<?= countTableById($all->id, $pdo) ?>)</a>
+                                                                                                <?php else : ?>
+                                                                                                    <a href="index.php?id=<?= $all->id ?>"><i style="color: red;" class="fa fa-thumbs-up"></i> Like (<?= countTableById($all->id, $pdo) ?>)</a>
+                                                                                                <?php endif ?>
+                                                                                                <a style="cursor: pointer;" class="comment-button"><i class="fa fa-comment"></i>Commenter</a>
+                                                                                                <a href="#"><i class="fa fa-share"></i>Partager</a>
+                                                                                            </div>
+                                                                                            <?php foreach (CommentByPostId($all->id, $pdo) as $comment) : ?>
+                                                                                                <div class="timeline-comment d-flex">
+                                                                                                    <div class="timeline-comment-header">
+                                                                                                        <img src="/images/<?= $comment->profil ?>" alt="" />
+                                                                                                    </div>
+                                                                                                    <p style="background-color:#EBF2FA; border-radius: 10px; display: inline-block; padding: 10px; color:#000 ; margin-left:5px">
+                                                                                                        <span style="font-weight::500;"><?= $comment->username ?></span><br>
+                                                                                                        <?= $comment->content ?>
+                                                                                                    </p>
+                                                                                                    <?php if ($_SESSION['users']->id == $comment->user_id) : ?>
+                                                                                                        <div style="margin-left: 5px;">
+                                                                                                            <a href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                                                                <i class="fa-solid fa-ellipsis"></i>
+                                                                                                            </a>
+                                                                                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                                                                                <li>
+                                                                                                                    <a class="dropdown-item" href="index.php?edit_comment=<?= $comment->id ?>&id=<?= $posts->id ?>">
+                                                                                                                        <i class="fas fa-edit"></i> Modifier le commentaire
+                                                                                                                    </a>
+                                                                                                                </li>
+                                                                                                                <li>
+                                                                                                                    <a class="dropdown-item" href="index.php?delete_comment=<?= $comment->id ?>&id=<?= $post->id ?>">
+                                                                                                                        <i class="fas fa-trash-alt"></i> Supprimer
+                                                                                                                    </a>
+                                                                                                                </li>
+                                                                                                            </ul>
+                                                                                                        </div>
+                                                                                                    <?php endif ?>
+                                                                                                </div>
+                                                                                            <?php endforeach ?>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                            <div class="timeline-item-post">
-                                                                <p class="text-dark"><?=$share_post->content?></p>
+                                                                <div style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius:10px" class="modal-footer">
+                                                                    <?php if (isset($_GET['edit_comment'])) : ?>
+                                                                        <form style="margin-top: 20px; width:100%" action="index.php?edit_comment=<?= $edit_comment->id ?>&id=<?= $posts->id ?>" method="post" class="col-12">
+                                                                            <div class="comment-box">
+                                                                                <img src="/images/<?= $users->profil ?>" class="profile-picture" alt="Image de profil">
+                                                                                <div class="comment-input">
+                                                                                    <textarea name="comments" class="form-control custom-textarea" placeholder="Écrivez un commentaire" onclick="heightTextarea(this)" oninput="autoResize(this)" onfocus="addFocusClass(this)" onblur="removeFocusClass(this)"><?= $edit_comment->content ?></textarea>
+                                                                                    <button type="submit" style="display: block;" name="edit_comment" class="send-button"><i class="fas fa-paper-plane"></i></button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </form>
+                                                                    <?php else : ?>
+                                                                        <form style="margin-top: 20px; width:100%" action="index.php?id_post=<?= $posts->id ?>&id=<?= $posts->id ?>" method="post" class="col-12">
+                                                                            <div class="comment-box">
+                                                                                <img src="/images/<?= $users->profil ?>" class="profile-picture" alt="Image de profil">
+                                                                                <div class="comment-input">
+                                                                                    <textarea name="comments" class="form-control custom-textarea" placeholder="Écrivez un commentaire" onclick="heightTextarea(this)" oninput="autoResize(this)" onfocus="addFocusClass(this)" onblur="removeFocusClass(this)"></textarea>
+                                                                                    <button type="submit" style="display: block;" name="comment" class="send-button"><i class="fas fa-paper-plane"></i></button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </form>
+                                                                    <?php endif ?>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <div class="timeline-options d-flex justify-content-around">
-                                            <a href="#"><i class="fa fa-thumbs-up"></i> Like (10)</a>
-                                            <a class="editLink" href="#" style="z-index: 1050;"><i class="fa fa-comment"></i>Commenter</a>
-                                            <a id="share" href="#"><i class="fa fa-share"></i>Partager</a>
+                                                    <a id="share" class="dropdown-toggle" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" href="#"><i class="fa fa-share"></i>Partager</a>
+                                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                                        <li><a href="index.php?post_id_share=<?= $all->id ?>" class="dropdown-item">Partager sur le Fil</a></li>
+                                                        <div class="modal fade" id="exampleModal-share" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                            <div class="modal-dialog">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        ...
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                        <button type="button" class="btn btn-primary">Save changes</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </ul>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-                <?php endforeach ?>
-                <!-- End share -->
-                <?php foreach (JointurePost($pdo) as $post) : ?>
-                    <div class="profile-timeline">
-                        <ul class="list-unstyled">
-                            <li class="timeline-item">
-                                <div style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);border-radius:10px" class="card  grid-margin">
-                                    <div class="card-body">
-                                        <div class="content d-flex">
-                                            <div class="timeline-item-header">
-                                                <a href="profil.php?user_id=<?= $post->user_id ?>"><img src="/images/<?= $post->profil ?>" alt="" /></a>
-                                                <p style="font-size: 20px;font-weight:600"><?= $post->username ?></p>
-                                            </div>
-                                            <?php if ($_SESSION['users']->id == $post->user_id) : ?>
+                                </li>
+                            </ul>
+                        </div>
+                    <?php else : ?>
+                        <?php
+                        $share_post = getById($all->post_id, $pdo, "posts");
+                        $users_share = getById($all->user_id, $pdo, "users");
+                        $users_post = getById($share_post->user_id, $pdo, "users");
+                        ?>
+                        <div class="profile-timeline">
+                            <ul class="list-unstyled">
+                                <li class="timeline-item">
+                                    <div style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);border-radius:10px" class="card  grid-margin">
+                                        <div class="card-body">
+                                            <div class="content d-flex">
+                                                <div class="timeline-item-header">
+                                                    <a href="#"><img src="/images/<?= $users_share->profil ?>" alt="" /></a>
+                                                    <p style="font-size: 20px;font-weight:600"><?= $users_share->username ?></p>
+                                                </div>
                                                 <a href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                                                     <small><i style="color: black; font-size: 15px;" class="fa-solid fa-ellipsis"></i></small>
                                                 </a>
-                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                                    <li>
-                                                        <a class="dropdown-item" href="index.php?edit_id=<?= $post->id ?>">
-                                                            <i class="fas fa-edit"></i> Modifier la publiaction
-                                                        </a>
-                                                        <span data-toggle="modal" data-target="#photoModal-1" style="display:none;"></span>
-                                                    </li>
-                                                    <li>
-                                                        <a class="dropdown-item" href="index.php?delpost=<?= $post->id ?>">
-                                                            <i class="fas fa-trash-alt"></i> Supprimer la publication
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            <?php endif ?>
-                                        </div>
-                                        <div class="timeline-item-post">
-                                            <p class="text-dark"><?= $post->content ?></p>
-                                            <div style="margin-bottom: 10px;" class="card">
-                                                <img src="/images/<?= $post->picture ?>" alt="">
                                             </div>
-                                            <div class="bbbb d-flex justify-content-end">
-                                                <a href=""><?= CountCommentByPostId($pdo, $post->id) ?> <i class="fa-solid fa-comment"></i></a>
-                                                <a style="margin-left: 20px;" href="#"><i class="fa fa-share"></i> 20</a>
-                                            </div>
-                                            <hr>
-                                            <div class="timeline-options d-flex justify-content-around">
-                                                <?php if (!checkLikeForUser($pdo, $post->id, $_SESSION['users']->id)) : ?>
-                                                    <a href="index.php?post_id=<?= $post->id ?>"><i class="fa fa-thumbs-up"></i> Like (<?= countTableById($post->id, $pdo) ?>)</a>
-                                                <?php else : ?>
-                                                    <a href="index.php?post_id=<?= $post->id ?>"><i style="color: red;" class="fa fa-thumbs-up"></i> Like (<?= countTableById($post->id, $pdo) ?>)</a>
-                                                <?php endif ?>
-                                                <a class="editLink" href="#" data-taskid="<?= $post->id ?>" data-bs-toggle="modal" data-bs-target="#staticBackdrop<?= $post->id ?>" style="z-index: 1050;"><i class="fa fa-comment"></i>Commenter</a>
-                                                <div class="modal fade" id="staticBackdrop<?= $post->id ?>" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                                                    <div class="modal-dialog modal-lg" role="document">
-                                                        <div style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius:10px" class="modal-content">
-                                                            <div style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius:10px" class="modal-header">
-                                                                <h5 style="font-weight: b;" class="modal-title" id="photoModalLabel">Publication de <?= $posts->username ?></h5>
-                                                                <a href="index.php">
-                                                                    <i style="font-size: 35px;" class="fa-solid fa-circle-xmark"></i>
-                                                                </a>
-                                                            </div>
-                                                            <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
-                                                                <div class="profile-timeline">
-                                                                    <ul class="list-unstyled">
-                                                                        <li class="timeline-item">
-                                                                            <div class="card card-white grid-margin">
-                                                                                <div class="card-body">
-                                                                                    <div class="timeline-item-header">
-                                                                                        <a href="profil.php?user_id=<?= $posts->user_id ?>"><img src="/images/<?= $posts->profil ?>" alt="" /></a>
-                                                                                        <p><?= $post->username ?></p>
-                                                                                        <small>3 hours ago</small>
-                                                                                    </div>
-                                                                                    <div class="timeline-item-post">
-                                                                                        <p><?= $post->content ?></p>
-                                                                                        <div class="card">
-                                                                                            <img src="/images/<?= $posts->picture ?>" alt="">
-                                                                                        </div>
-                                                                                        <div class="timeline-options d-flex justify-content-around">
-                                                                                            <?php if (!checkLikeForUser($pdo, $post->id, $_SESSION['users']->id)) : ?>
-                                                                                                <a href="index.php?id=<?= $post->id ?>"><i class="fa fa-thumbs-up"></i> Like (<?= countTableById($post->id, $pdo) ?>)</a>
-                                                                                            <?php else : ?>
-                                                                                                <a href="index.php?id=<?= $post->id ?>"><i style="color: red;" class="fa fa-thumbs-up"></i> Like (<?= countTableById($post->id, $pdo) ?>)</a>
-                                                                                            <?php endif ?>
-                                                                                            <a style="cursor: pointer;" class="comment-button"><i class="fa fa-comment"></i>Commenter</a>
-                                                                                            <a href="#"><i class="fa fa-share"></i>Partager</a>
-                                                                                        </div>
-                                                                                        <?php foreach (CommentByPostId($post->id, $pdo) as $comment) : ?>
-                                                                                            <div class="timeline-comment d-flex">
-                                                                                                <div class="timeline-comment-header">
-                                                                                                    <img src="/images/<?= $comment->profil ?>" alt="" />
-                                                                                                </div>
-                                                                                                <p style="background-color:#EBF2FA; border-radius: 10px; display: inline-block; padding: 10px; color:#000 ; margin-left:5px">
-                                                                                                    <span style="font-weight::500;"><?= $comment->username ?></span><br>
-                                                                                                    <?= $comment->content ?>
-                                                                                                </p>
-                                                                                                <?php if ($_SESSION['users']->id == $comment->user_id) : ?>
-                                                                                                    <div style="margin-left: 5px;">
-                                                                                                        <a href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                                                                                                            <i class="fa-solid fa-ellipsis"></i>
-                                                                                                        </a>
-                                                                                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                                                                                            <li>
-                                                                                                                <a class="dropdown-item" href="index.php?edit_comment=<?= $comment->id ?>&id=<?= $posts->id ?>">
-                                                                                                                    <i class="fas fa-edit"></i> Modifier le commentaire
-                                                                                                                </a>
-                                                                                                            </li>
-                                                                                                            <li>
-                                                                                                                <a class="dropdown-item" href="index.php?delete_comment=<?= $comment->id ?>&id=<?= $post->id ?>">
-                                                                                                                    <i class="fas fa-trash-alt"></i> Supprimer
-                                                                                                                </a>
-                                                                                                            </li>
-                                                                                                        </ul>
-                                                                                                    </div>
-                                                                                                <?php endif ?>
-                                                                                            </div>
-                                                                                        <?php endforeach ?>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </li>
-                                                                    </ul>
+                                            <div class="timeline-item-post">
+                                                <div class="profile-timeline">
+                                                    <ul class="list-unstyled">
+                                                        <li class="timeline-item">
+                                                            <div style="border-radius:10px" class="card  grid-margin">
+                                                                <div class="card-body">
+                                                                    <div class="timeline-item-post">
+                                                                        <p class="text-dark"><?= $share->content?></p>
+                                                                    </div>
+                                                                    <div class="timeline-item-post">
+                                                                        <div style="margin-bottom: 10px;" class="card">
+                                                                            <img src="/images/<?= $share_post->picture ?>" alt="">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="content d-flex">
+                                                                        <div class="timeline-item-header">
+                                                                            <a href="#"><img src="/images/<?= $users_post->profil ?>" alt="" /></a>
+                                                                            <p style="font-size: 20px;font-weight:600"><?= $users_post->username ?></p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="timeline-item-post">
+                                                                        <p class="text-dark"><?= $share_post->content ?></p>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                            <div style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius:10px" class="modal-footer">
-                                                                <?php if (isset($_GET['edit_comment'])) : ?>
-                                                                    <form style="margin-top: 20px; width:100%" action="index.php?edit_comment=<?= $edit_comment->id ?>&id=<?= $posts->id ?>" method="post" class="col-12">
-                                                                        <div class="comment-box">
-                                                                            <img src="/images/<?= $users->profil ?>" class="profile-picture" alt="Image de profil">
-                                                                            <div class="comment-input">
-                                                                                <textarea name="comments" class="form-control custom-textarea" placeholder="Écrivez un commentaire" onclick="heightTextarea(this)" oninput="autoResize(this)" onfocus="addFocusClass(this)" onblur="removeFocusClass(this)"><?= $edit_comment->content ?></textarea>
-                                                                                <button type="submit" style="display: block;" name="edit_comment" class="send-button"><i class="fas fa-paper-plane"></i></button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </form>
-                                                                <?php else : ?>
-                                                                    <form style="margin-top: 20px; width:100%" action="index.php?id_post=<?= $posts->id ?>&id=<?= $posts->id ?>" method="post" class="col-12">
-                                                                        <div class="comment-box">
-                                                                            <img src="/images/<?= $users->profil ?>" class="profile-picture" alt="Image de profil">
-                                                                            <div class="comment-input">
-                                                                                <textarea name="comments" class="form-control custom-textarea" placeholder="Écrivez un commentaire" onclick="heightTextarea(this)" oninput="autoResize(this)" onfocus="addFocusClass(this)" onblur="removeFocusClass(this)"></textarea>
-                                                                                <button type="submit" style="display: block;" name="comment" class="send-button"><i class="fas fa-paper-plane"></i></button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </form>
-                                                                <?php endif ?>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                        </li>
+                                                    </ul>
                                                 </div>
-                                                <a id="share" class="dropdown-toggle" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" href="#"><i class="fa fa-share"></i>Partager</a>
-                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                                                    <li><a href="index.php?post_id_share=<?= $post->id ?>" class="dropdown-item">Partager sur le Fil</a></li>
-                                                    <div class="modal fade" id="exampleModal-share" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                        <div class="modal-dialog">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    ...
-                                                                </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                                    <button type="button" class="btn btn-primary">Save changes</button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                </ul>
+                                                <div class="timeline-options d-flex justify-content-around">
+                                                    <a href="#"><i class="fa fa-thumbs-up"></i> Like (10)</a>
+                                                    <a class="editLink" href="#" style="z-index: 1050;"><i class="fa fa-comment"></i>Commenter</a>
+                                                    <a id="share" href="#"><i class="fa fa-share"></i>Partager</a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    <?php endif ?>
                 <?php endforeach ?>
             </div>
             <div style="position: fixed; right:0;" class="col-lg-12 col-xl-3 ">
